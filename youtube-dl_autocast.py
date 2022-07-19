@@ -102,16 +102,19 @@ for line in open('album-dl.txt', 'r'):
     varPath = makedirstruc(varGenre, varArtist, varAlbum)
     
     # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
-    # os.system("touch errorout")
+    os.system("touch errorout")
     #  this is the harder part here, to actually download the url
-    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
+    # old functional downloader cmd
+    # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
     
     # this is the old params for the checking stuff lel
-    #    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " &>>errorout")
+    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
 
     ##  check thing
     ## in order to do this we need an example of the error I keep getting (collected)
-    # retry_index = search_error()
+    retry_index = search_error()
+    # before we actually try to fix, we need to make sure this function working properly
+    print(retry_index)
     # was_main_now_no(retry_index)
 
 # make noise
