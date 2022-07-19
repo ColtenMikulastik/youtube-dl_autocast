@@ -33,13 +33,11 @@ def makedirstruc(varGenre, varArtist, varAlbum):
     varGenre = cmdable(varGenre)
     varArtist = cmdable(varArtist)
     varAlbum = cmdable(varAlbum)
-
+    
+    path_m = os.path.join(varGenre, varArtist, varAlbum)
     # create file system
-    os.system("mkdir " + varGenre)
-    os.system("mkdir " + varGenre + '/' + varArtist)
-    os.system("mkdir " + varGenre + '/' + varArtist + '/' + varAlbum)
-    returnable = varGenre + '/' + varArtist + '/' + varAlbum
-    return returnable
+    os.system("mkdir -p " + path_m)
+    return path_m
 
 def search_error():
     #this would litterally work amazing with a fifo queue, no it doesn't thanks tho list pls!
