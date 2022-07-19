@@ -50,7 +50,8 @@ def search_error():
         for line in file:
             l_line = line.split(' ')
             for word in l_line:
-                if word == "ERROR:":
+                # so here I am also going to check the type of error message
+                if word == "ERROR:" and l_line[-1] == "Forbidden\n":
                     is_error = True
                     #look for the number connected to the error
                     num_line = q[1]
