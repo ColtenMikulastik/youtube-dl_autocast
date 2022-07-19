@@ -68,7 +68,7 @@ def search_error():
     return error_nubns
 
 # I'm goning to make this thing that was in main, now into a function so that I can comment it out without loosing the code
-def was_main_now_no(retry_index):
+def retry_func(retry_index):
         if retry_index != None: 
             # because python is stupid
             # make all the int into strings
@@ -105,6 +105,7 @@ for line in open('album-dl.txt', 'r'):
     # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
     os.system("touch errorout")
     #  this is the harder part here, to actually download the url
+
     # old functional downloader cmd
     # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
     
@@ -115,8 +116,8 @@ for line in open('album-dl.txt', 'r'):
     ## in order to do this we need an example of the error I keep getting (collected)
     retry_index = search_error()
     # before we actually try to fix, we need to make sure this function working properly
+    retry_func(retry_index)
     print(retry_index)
-    # was_main_now_no(retry_index)
 
 # make noise
 print('\a')
