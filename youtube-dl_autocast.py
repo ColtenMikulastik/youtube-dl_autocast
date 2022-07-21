@@ -50,7 +50,8 @@ def search_error():
         for line in file:
             l_line = line.split(' ')
             for word in l_line:
-                if word == "ERROR:":
+                # so here I am also going to check the type of error message
+                if word == "ERROR:" and l_line[-1] == "Forbidden\n":
                     is_error = True
                     #look for the number connected to the error
                     num_line = q[1]
@@ -67,7 +68,7 @@ def search_error():
     return error_nubns
 
 # I'm goning to make this thing that was in main, now into a function so that I can comment it out without loosing the code
-def was_main_now_no(retry_index):
+def retry_func(retry_index):
         if retry_index != None: 
             # because python is stupid
             # make all the int into strings
@@ -102,17 +103,21 @@ for line in open('album-dl.txt', 'r'):
     varPath = makedirstruc(varGenre, varArtist, varAlbum)
     
     # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
-    # os.system("touch errorout")
+    os.system("touch errorout")
     #  this is the harder part here, to actually download the url
-    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
+
+    # old functional downloader cmd
+    # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
     
     # this is the old params for the checking stuff lel
-    #    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " &>>errorout")
+    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
 
     ##  check thing
     ## in order to do this we need an example of the error I keep getting (collected)
-    # retry_index = search_error()
-    # was_main_now_no(retry_index)
+    retry_index = search_error()
+    # before we actually try to fix, we need to make sure this function working properly
+    retry_func(retry_index)
+    print(retry_index)
 
 # make noise
 print('\a')
