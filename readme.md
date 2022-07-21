@@ -10,3 +10,6 @@ youtube URL;Genre;Artist;Album
 ```
 Once the program is done, there might be songs that threw an error, if an error has been thrown on a song that song will be skipped, and I have yet to make a workaround for this problem.
 
+Required Python Libraries:
+	-os
+	-yt_dlp	
