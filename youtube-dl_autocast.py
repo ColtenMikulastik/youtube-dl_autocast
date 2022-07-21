@@ -4,6 +4,8 @@
 # to quit, or to fail open (just move past the problem) this isn't really greate because you can be missing
 # tracks if you are trying to download music which is fucking annoying... so we want to 
 import os
+import yt_dlp
+
 
 def cmdable(inps):
     inps_l = list(inps)
