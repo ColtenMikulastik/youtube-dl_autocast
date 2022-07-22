@@ -4,8 +4,9 @@ def yt_dlp_download(youtube_url):
     # options need to be specified
     yt_options = {
             "outtmpl" : "%(playlist_index)s %(title)s.%(ext)s",
-            "format" : "bestaudio",
-            "audio_format" : "mp3"
+            "audio_format" : "mp3",
+            "format" : "audio_only",
+            "path": "testdir",
         }
     # creating an instance of the YoutubeDL object
     # put options in the constructor's parameters
@@ -15,7 +16,7 @@ def yt_dlp_download(youtube_url):
 
 
 def main():
-    test_url = "https://www.youtube.com/playlist?list=PLVciB1OCnYiUgKLUU5hOtCk-yCdM4x2x_"
+    test_url = "https://www.youtube.com/watch?v=RTB5XhjbgZA&ab_channel=Posy"
     yt_dlp_download(test_url)
     print("done")
 
