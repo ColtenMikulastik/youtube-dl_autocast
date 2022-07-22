@@ -30,8 +30,19 @@ def cmdable(inps):
     return r_inps
 
 
-def yt_dlp_download():
-    pass    
+def yt_dlp_download(youtube_url):
+    # options need to be specified
+    yt_options = {
+            "outtmpl" : "%(playlist_index)s %(title)s.%(ext)s",
+            "format" : "bestaudio",
+            "audio_format" : "mp3"
+        }
+    # creating an instance of the YoutubeDL object
+    # put options in the constructor's parameters
+    yt_downloader = yt_dlp.YoutubeDL(yt_options)
+    yt_downloader.download(youtube_url)
+    
+    
 
 
 def makedirstruc(varGenre, varArtist, varAlbum):
@@ -115,12 +126,11 @@ for line in open('album-dl.txt', 'r'):
 
     # old functional downloader cmd
     # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
-    
     # this is the old params for the checking stuff lel
     os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
 
     # this is were I'm going to add a new function
-    yt_dlp_download()
+    yt_dlp_download(varURL)
     ##  check thing
     ## in order to do this we need an example of the error I keep getting (collected)
     retry_index = search_error()
