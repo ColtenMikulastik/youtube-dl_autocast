@@ -29,6 +29,11 @@ def cmdable(inps):
     r_inps = ''.join(inps_l)
     return r_inps
 
+
+def yt_dlp_download():
+    pass    
+
+
 def makedirstruc(varGenre, varArtist, varAlbum):
     #  make files genre/artist/album, if it already exist than i think it will skip but idk
     #first make them cmdable
@@ -114,6 +119,8 @@ for line in open('album-dl.txt', 'r'):
     # this is the old params for the checking stuff lel
     os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
 
+    # this is were I'm going to add a new function
+    yt_dlp_download()
     ##  check thing
     ## in order to do this we need an example of the error I keep getting (collected)
     retry_index = search_error()
