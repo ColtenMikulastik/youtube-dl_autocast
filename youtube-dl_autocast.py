@@ -30,18 +30,25 @@ def cmdable(inps):
     return r_inps
 
 
-def yt_dlp_download(youtube_url):
-    # options need to be specified
+def yt_dlp_download(youtube_url, varPath):
+    # options need to be specified based on audio quality
     yt_options = {
-            "outtmpl" : "%(playlist_index)s %(title)s.%(ext)s",
+            "outtmpl" : varPath + "/%(playlist_index)s %(title)s.%(ext)s",
             "format" : "bestaudio",
-            "audio_format" : "mp3"
+            "ignoreerrors" : True,
+            "retries": 10,
+            "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "mp3",
+                        "preferredquality": "192" 
+                    }
+                ]
         }
     # creating an instance of the YoutubeDL object
     # put options in the constructor's parameters
-    yt_downloader = yt_dlp.YoutubeDL(yt_options)
-    yt_downloader.download(youtube_url)
-    
+    with yt_dlp.YoutubeDL(yt_options) as ydl:
+        ydl.download(youtube_url)
     
 
 
@@ -120,23 +127,29 @@ for line in open('album-dl.txt', 'r'):
     varAlbum = variables[3]
     varPath = makedirstruc(varGenre, varArtist, varAlbum)
     
-    # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
-    os.system("touch errorout")
-    #  this is the harder part here, to actually download the url
+    use_yt_dlp = True
+    
+    # implementation of yt_dlp, faster at downloading
+    if use_yt_dlp:
+        yt_dlp_download(varURL, varPath)
+    else:
 
-    # old functional downloader cmd
-    # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
-    # this is the old params for the checking stuff lel
-    os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
-
-    # this is were I'm going to add a new function
-    yt_dlp_download(varURL)
-    ##  check thing
-    ## in order to do this we need an example of the error I keep getting (collected)
-    retry_index = search_error()
-    # before we actually try to fix, we need to make sure this function working properly
-    retry_func(retry_index)
-    print(retry_index)
+        # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
+        os.system("touch errorout")
+        #  this is the harder part here, to actually download the url
+    
+        # old functional downloader cmd
+        # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
+        # this is the old params for the checking stuff lel
+        os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
+    
+        # this is were I'm going to add a new function
+        ##  check thing
+        ## in order to do this we need an example of the error I keep getting (collected)
+        retry_index = search_error()
+        # before we actually try to fix, we need to make sure this function working properly
+        retry_func(retry_index)
+        print(retry_index)
 
 # make noise
 print('\a')
