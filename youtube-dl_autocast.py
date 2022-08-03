@@ -110,46 +110,51 @@ def retry_func(retry_index):
         else:
             pass
 
-# so now I have to add the text parsing part of the program
-# the file goes "URL;Genre;Artist;Album"
-for line in open('album-dl.txt', 'r'):
-    readline = line
-    variables = readline.split(';') 
+def main():
+    # so now I have to add the text parsing part of the program
+    # the file goes "URL;Genre;Artist;Album"
+    for line in open('album-dl.txt', 'r'):
+        readline = line
+        variables = readline.split(';') 
+    
+        # remove the new line
+        nline = variables[3] 
+        nline = list(nline)
+        nline.pop()
+        variables[3] = ''.join(nline)
+        varURL = variables[0] 
+        varGenre = variables[1]
+        varArtist = variables[2]
+        varAlbum = variables[3]
+        varPath = makedirstruc(varGenre, varArtist, varAlbum)
+        
+        use_yt_dlp = True
+        
+        # implementation of yt_dlp, faster at downloading
+        if use_yt_dlp:
+            yt_dlp_download(varURL, varPath)
+        else:
+    
+            # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
+            os.system("touch errorout")
+            #  this is the harder part here, to actually download the url
+        
+            # old functional downloader cmd
+            # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
+            # this is the old params for the checking stuff lel
+            os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
+        
+            # this is were I'm going to add a new function
+            ##  check thing
+            ## in order to do this we need an example of the error I keep getting (collected)
+            retry_index = search_error()
+            # before we actually try to fix, we need to make sure this function working properly
+            retry_func(retry_index)
+            print(retry_index)
+    
+    # make noise
+    print('\a')
 
-    # remove the new line
-    nline = variables[3] 
-    nline = list(nline)
-    nline.pop()
-    variables[3] = ''.join(nline)
-    varURL = variables[0] 
-    varGenre = variables[1]
-    varArtist = variables[2]
-    varAlbum = variables[3]
-    varPath = makedirstruc(varGenre, varArtist, varAlbum)
-    
-    use_yt_dlp = True
-    
-    # implementation of yt_dlp, faster at downloading
-    if use_yt_dlp:
-        yt_dlp_download(varURL, varPath)
-    else:
 
-        # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
-        os.system("touch errorout")
-        #  this is the harder part here, to actually download the url
-    
-        # old functional downloader cmd
-        # os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL)
-        # this is the old params for the checking stuff lel
-        os.system("youtube-dl -ix --audio-format mp3 --output " + varPath + '/\'%(playlist_index)s %(title)s.%(ext)s\' ' + varURL + " > errorout 2>&1")
-    
-        # this is were I'm going to add a new function
-        ##  check thing
-        ## in order to do this we need an example of the error I keep getting (collected)
-        retry_index = search_error()
-        # before we actually try to fix, we need to make sure this function working properly
-        retry_func(retry_index)
-        print(retry_index)
-
-# make noise
-print('\a')
+if __name__ == "__main__":
+    main()
