@@ -1,4 +1,4 @@
-#Luca (Colten) Mikulastik: 3/13/2022
+# Luca (Colten) Mikulastik: 3/13/2022
 # so we are just going to read from a text file and then past that information on to a command line basically
 # 3/16/2022: now were going to fix the problems of the other youtube-dl program; mainly there is only an option
 # to quit, or to fail open (just move past the problem) this isn't really greate because you can be missing
@@ -64,6 +64,7 @@ def makedirstruc(varGenre, varArtist, varAlbum):
     os.system("mkdir -p " + path_m)
     return path_m
 
+
 def search_error():
     #this would litterally work amazing with a fifo queue, no it doesn't thanks tho list pls!
     q = []
@@ -92,6 +93,7 @@ def search_error():
                 q.pop(0)
     return error_nubns
 
+
 # I'm goning to make this thing that was in main, now into a function so that I can comment it out without loosing the code
 def retry_func(retry_index):
         if retry_index != None: 
@@ -110,7 +112,13 @@ def retry_func(retry_index):
         else:
             pass
 
+
 def main():
+    # I'm gonna add an option so that the user gets to choose what why to run program
+    print("You are running youtube-dl_autocast...")
+    print("would you like to run slowly with error checking")
+    print("or quickly without?")
+    use_yt_dlp = input(":")
     # so now I have to add the text parsing part of the program
     # the file goes "URL;Genre;Artist;Album"
     for line in open('album-dl.txt', 'r'):
