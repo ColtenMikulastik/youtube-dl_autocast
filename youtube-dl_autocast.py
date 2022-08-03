@@ -116,9 +116,16 @@ def retry_func(retry_index):
 def main():
     # I'm gonna add an option so that the user gets to choose what why to run program
     print("You are running youtube-dl_autocast...")
-    print("would you like to run slowly with error checking")
-    print("or quickly without?")
-    use_yt_dlp = input(":")
+    print("would you like to run in fast or safe mode?")
+    print("quick mode = q")
+    print("safe mode = s")
+    mode_input = input("...:")
+    # will default run in fast mode
+    if mode_input == 's':
+        use_yt_dlp = False
+    else:
+        use_yt_dlp = True
+
     # so now I have to add the text parsing part of the program
     # the file goes "URL;Genre;Artist;Album"
     for line in open('album-dl.txt', 'r'):
@@ -135,8 +142,6 @@ def main():
         varArtist = variables[2]
         varAlbum = variables[3]
         varPath = makedirstruc(varGenre, varArtist, varAlbum)
-        
-        use_yt_dlp = True
         
         # implementation of yt_dlp, faster at downloading
         if use_yt_dlp:
