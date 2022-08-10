@@ -1,8 +1,6 @@
 # Luca (Colten) Mikulastik: 3/13/2022
 # so we are just going to read from a text file and then past that information on to a command line basically
-# 3/16/2022: now were going to fix the problems of the other youtube-dl program; mainly there is only an option
-# to quit, or to fail open (just move past the problem) this isn't really greate because you can be missing
-# tracks if you are trying to download music which is fucking annoying... so we want to 
+# 3/16/2022: now were going to fix the problems of the other youtube-dl program;
 import os
 import yt_dlp
 
