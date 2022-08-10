@@ -3,13 +3,15 @@ Creator: Colten (Luca) V. Mikulastik
 
 The goal of this project was to make a pretty simple and automated command-line tool for Linux systems that can automatically download YouTube videos.  
 I wrote this code to test my abilities as a programmer not to make piracy easier.  
-This code uses the "[youtube-dl](https://youtube-dl.org/)" command line tool as the main dependancy, and the python os library to control operating system actions.  
+This code uses the "[youtube-dl](https://youtube-dl.org/)" command line tool to run in safe mode.
+It also use the "[yt-dlp](https://github.com/yt-dlp/yt-dlp)" library to run the code in fast mode.
+In safe mode the program will error check and retry files that threw a network error. 
+This is not true in fast mode, however the download speeds are greatly increased.
 This program works by reading the text file "album_dl.txt" and creating directories to represent the fields in the text files such as genre, artist, album. The format is VERY syntax reliant so do not deviate from the form
 ```
-youtube URL;Genre;Artist;Album
+"youtube URL";"Genre";"Artist";"Album"
 ```
-Once the program is done, there might be songs that threw an error, if an error has been thrown on a song that song will be skipped, and I have yet to make a workaround for this problem.
-
+Now with error checking in safe mode!
 Required Python Libraries:
 	-os
 	-yt_dlp	
