@@ -1,6 +1,9 @@
 # Luca (Colten) Mikulastik: 3/13/2022
 # so we are just going to read from a text file and then past that information on to a command line basically
 # 3/16/2022: now were going to fix the problems of the other youtube-dl program;
+# !!!!! BUG: in dir creation, creates dir correct dir, then creates dir with '\' 
+# chars in spaces and stores items there
+
 import os
 import yt_dlp
 
