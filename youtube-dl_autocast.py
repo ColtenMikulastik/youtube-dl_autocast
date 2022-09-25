@@ -8,29 +8,6 @@ import os
 import yt_dlp
 
 
-def cmdable(inps):
-    inps_l = list(inps)
-    inps_l_len = len(inps_l)
-
-    for i in range(0,inps_l_len):
-        if inps_l[i] == ' ':
-            inps_l[i] = '\\ '
-        elif inps_l[i] == '\'':
-            inps_l[i] = '\\\''
-        elif inps_l[i] == '(':
-            inps_l[i] = '\('
-        elif inps_l[i] == ')':
-            inps_l[i] = '\)'
-        elif inps_l[i] == ',':
-            inps_l[i] = '\,'
-        elif inps_l[i] == '?':
-            inps_l[i] = '\?'
-        elif inps_l[i] == '!':
-            inps_l[i] = '\!'
-    r_inps = ''.join(inps_l)
-    return r_inps
-
-
 def yt_dlp_download(youtube_url, varPath):
     # options need to be specified based on audio quality
     yt_options = {
@@ -144,8 +121,7 @@ def main():
             varGenre = variables[1]
             varArtist = variables[2]
             varAlbum = variables[3]
-            varPath = makedirstruc(varGenre, varArtist, varAlbum)
-            
+            varPath = os.path.join(varGenre, varArtist, varAlbum)
             # implementation of yt_dlp, faster at downloading
             if use_yt_dlp:
                 yt_dlp_download(varURL, varPath)
