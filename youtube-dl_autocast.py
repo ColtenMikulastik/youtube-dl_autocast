@@ -150,6 +150,7 @@ def main():
     
     # make noise
     # call bash script at the end of this script
+    call_bash_script()
     print('\a')
 
 
