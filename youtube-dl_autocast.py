@@ -90,6 +90,10 @@ def retry_func(retry_index):
         else:
             pass
 
+def call_bash_script():
+    # use the os lib to run the bash script
+    os.system("chmod a+x mp3set.sh")
+
 
 def main():
     # I'm gonna add an option so that the user gets to choose what why to run program
@@ -145,6 +149,7 @@ def main():
                 print(retry_index)
     
     # make noise
+    # call bash script at the end of this script
     print('\a')
 
 
