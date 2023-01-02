@@ -93,6 +93,9 @@ def retry_func(retry_index):
 def call_bash_script():
     # use the os lib to run the bash script
     os.system("chmod a+x mp3set.sh")
+    # run the bash tool that I wrote
+    os.system("./mp3set.sh")
+    # function should change the metadata on all the files in genre directorys
 
 
 def main():
@@ -150,6 +153,7 @@ def main():
     
     # make noise
     # call bash script at the end of this script
+    call_bash_script()
     print('\a')
 
 
