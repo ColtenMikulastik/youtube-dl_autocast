@@ -6,6 +6,35 @@
 
 import os
 import yt_dlp
+import requests
+from bs4 import BeautifulSoup
+
+
+def download_album_cover(var_url, var_path, var_album):
+    # set the headers that I think that youtube music wants
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    
+    
+    page = requests.get(var_url, headers=headers)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    
+    stringsoup = str(soup)
+    
+    stringsoup = stringsoup[stringsoup.find("thumbnails"):]
+    
+    stringsoup = stringsoup[stringsoup.find("https"):]
+    
+    sub_stringsoup = stringsoup[: stringsoup.find("\\x")]
+    
+    sub_stringsoup = sub_stringsoup.replace("\\/","/")
+    print(sub_stringsoup)
+    
+    image_req = requests.get(sub_stringsoup)
+    
+    path_for_img = var_path + var_album + "ablum_cover.jpg"
+
+    with open(path_for_img, "wb") as file:
+        file.write(image_req.content)
 
 
 def yt_dlp_download(youtube_url, varPath):
