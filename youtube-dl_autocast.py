@@ -40,7 +40,7 @@ def download_album_cover(var_url, var_path, var_album):
     image_req = requests.get(sub_stringsoup)
     
     # create the path that I want the image to be saved into
-    path_for_img = var_path + var_album + "ablum_cover.jpg"
+    path_for_img = var_path + "/ablum_cover.jpg"
 
     # then write the bites of the requested image into the file
     with open(path_for_img, "wb") as file:
@@ -171,6 +171,7 @@ def main():
             # implementation of yt_dlp, faster at downloading
             if use_yt_dlp:
                 yt_dlp_download(varURL, varPath)
+                download_album_cover(varURL, varPath, varAlbum)
             else:
         
                 # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
