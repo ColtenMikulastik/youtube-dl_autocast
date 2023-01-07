@@ -11,28 +11,38 @@ from bs4 import BeautifulSoup
 
 
 def download_album_cover(var_url, var_path, var_album):
+    """downloads thumbnail image for a youtube music playlist"""
     # set the headers that I think that youtube music wants
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     
-    
-    page = requests.get(var_url, headers=headers)
+    # get the html page
+    page = requests.get(var_url, headers=headers) 
     soup = BeautifulSoup(page.content, 'html.parser')
     
+    # turn the soup type into a string, so I can parse it for information
     stringsoup = str(soup)
     
+    # look for keyword "thumbnails"
     stringsoup = stringsoup[stringsoup.find("thumbnails"):]
     
+    # find the link after the thumbnails keyword 
     stringsoup = stringsoup[stringsoup.find("https"):]
     
+    # these could both be one line I think
+
+    # remove the uninportant information from the end
     sub_stringsoup = stringsoup[: stringsoup.find("\\x")]
     
+    # replace the strange \\/ characters that seem to be used in the html page
     sub_stringsoup = sub_stringsoup.replace("\\/","/")
-    print(sub_stringsoup)
     
+    # go to link's resource and request it
     image_req = requests.get(sub_stringsoup)
     
+    # create the path that I want the image to be saved into
     path_for_img = var_path + var_album + "ablum_cover.jpg"
 
+    # then write the bites of the requested image into the file
     with open(path_for_img, "wb") as file:
         file.write(image_req.content)
 
