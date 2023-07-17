@@ -171,7 +171,7 @@ def main():
             # implementation of yt_dlp, faster at downloading
             if use_yt_dlp:
                 yt_dlp_download(varURL, varPath)
-                download_album_cover(varURL, varPath, varAlbum)
+                # download_album_cover(varURL, varPath, varAlbum)
             else:
         
                 # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
