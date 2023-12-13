@@ -15,6 +15,5 @@ when adding your lines to the "album_dl_.txt" file do not use spaces or special 
 Now with error checking in safe mode!
 Required Bash CLI tools:
     -id3tool
-Required Python Libraries:
-	-os
-	-yt_dlp	
+Installing Python requirements is as easy as:
+``` pip3 install -r requirements.txt ```
