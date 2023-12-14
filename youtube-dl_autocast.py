@@ -4,10 +4,48 @@
 # !!!!! BUG: in dir creation, creates dir correct dir, then creates dir with '\'
 # chars in spaces and stores items there
 
+import csv
 import os
 import yt_dlp
 import requests
 from bs4 import BeautifulSoup
+
+
+def mp3set(genre, artist, album):
+    """ sets the mp3 tags with id3tag """
+    # dictionary that holds mappings of genre str to id3 int value
+    id3_genre_conv = {}
+
+    # unload the csv with the mappings of the id3 genre tags, omtting weird key
+    with open("id3_conv.csv", newline='') as conv_file:
+        reader = csv.reader(conv_file)
+        for feild in reader:
+            id3_genre_conv[feild[1]] = int(feild[0])
+
+    # get path, and all songs
+    active_path = os.path.join(os.curdir, genre, artist, album)
+    songs = os.listdir(active_path)
+
+    # loop through each song, and !!!!album art!!!!
+    for song in songs:
+        # remove number from front of song
+        # stopping here for the night
+        song.split(" ")
+
+        # craft our bash command
+        # cmd = "id3tag " + 
+        # send command
+        # os.system(cmd)
+
+    print(active_path)
+
+    # attempt to convert, if genre not found default to None=255
+    try:
+        print(id3_genre_conv["test"])
+        pass
+    except KeyError:
+        print("Genre not recognized, default None")
+        print(id3_genre_conv["None"])
 
 
 def download_album_cover(var_url, var_path, var_album):
