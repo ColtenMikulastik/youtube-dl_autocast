@@ -85,6 +85,7 @@ def mp3set(genre, artist, album):
 
 
 def yt_dlp_download(youtube_url, varPath):
+    """ calls and downloads youtube videos with yt-dlp """
     # options need to be specified based on audio quality
     yt_options = {
             "outtmpl": varPath + "/%(playlist_index)s %(title)s.%(ext)s",
@@ -103,15 +104,6 @@ def yt_dlp_download(youtube_url, varPath):
     # put options in the constructor's parameters
     with yt_dlp.YoutubeDL(yt_options) as ydl:
         ydl.download(youtube_url)
-
-
-def makedirstruc(varGenre, varArtist, varAlbum):
-    #  make files in shcema: genre/artist/album
-    # first make them cmdable
-    path_m = os.path.join(varGenre, varArtist, varAlbum)
-    # create file system
-    os.system("mkdir -p " + path_m)
-    return path_m
 
 
 def main():
