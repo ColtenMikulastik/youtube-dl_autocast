@@ -8,7 +8,7 @@ import csv
 import os
 import yt_dlp
 import requests
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 
 
 def mp3set(genre, artist, album):
@@ -26,26 +26,31 @@ def mp3set(genre, artist, album):
     active_path = os.path.join(os.curdir, genre, artist, album)
     songs = os.listdir(active_path)
 
-    # loop through each song, and !!!!album art!!!!
-    for song in songs:
-        # remove number from front of song
-        # stopping here for the night
-        song.split(" ")
-
-        # craft our bash command
-        # cmd = "id3tag " + 
-        # send command
-        # os.system(cmd)
-
-    print(active_path)
-
-    # attempt to convert, if genre not found default to None=255
+    # attempt to convert genre, if not found default to None=255
     try:
-        print(id3_genre_conv["test"])
+        id3_genre = id3_genre_conv[genre]
         pass
     except KeyError:
         print("Genre not recognized, default None")
-        print(id3_genre_conv["None"])
+        id3_genre = id3_genre_conv["None"]
+
+        os.path
+
+    # loop through each song, and !!!!album art!!!!
+    for song_file in songs:
+        # fix formatting of song and data
+        # remove the number
+        song = song_file.split(" ")
+        song_num = song[0]
+
+        # parse song name from file name
+        song[-1] = song[-1].split(".")[0]
+        song_name = " ".join(song[1:])
+
+        # craft our bash command
+        cmd = "id3tag -s \"" + song_name + "\" -t " + str(song_num) + " -a \"" + artist + "\" -A \"" + album + "\" -g " + str(id3_genre) + " \"" + os.path.join(active_path, song_file) + "\""
+        # send command
+        os.system(cmd)
 
 
 def download_album_cover(var_url, var_path, var_album):
@@ -181,7 +186,8 @@ def main():
     print("would you like to run in fast or safe mode?")
     print("quick mode = q")
     print("safe mode = s")
-    mode_input = input("...:")
+    mode_input = 'q'
+    # mode_input = input("...:")
     # will default run in fast mode
     if mode_input == 's':
         use_yt_dlp = False
@@ -210,6 +216,7 @@ def main():
             if use_yt_dlp:
                 yt_dlp_download(varURL, varPath)
                 # download_album_cover(varURL, varPath, varAlbum)
+                mp3set(varGenre, varArtist, varAlbum)
             else:
         
                 # this is so that you can review the informtion about what the program actually downloaded search for ERROR:
@@ -231,7 +238,7 @@ def main():
     
     # make noise
     # call bash script at the end of this script
-    call_bash_script()
+    # call_bash_scriptcall_bash_script()
     print('\a')
 
 
