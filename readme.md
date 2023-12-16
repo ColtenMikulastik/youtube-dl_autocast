@@ -1,19 +1,17 @@
-Hello!  
+# yt-dlp_autocast
 Creator: Colten (Luca) V. Mikulastik  
-
-The goal of this project was to make a pretty simple and automated command-line tool for Linux systems that can automatically download YouTube videos.  
+The goal of this project was to make a simple automated command-line tool for Linux systems that can automatically download YouTube albums.  
 I wrote this code to test my abilities as a programmer not to make piracy easier.  
-This code uses the "[youtube-dl](https://youtube-dl.org/)" command line tool to run in safe mode.
-It also use the "[yt-dlp](https://github.com/yt-dlp/yt-dlp)" library to run the code in fast mode.
-In safe mode the program will error check and retry files that threw a network error. 
-This is not true in fast mode, however the download speeds are greatly increased.
-This program works by reading the text file "album_dl.txt" and creating directories to represent the fields in the text files such as genre, artist, album. The format is VERY syntax reliant so do not deviate from the form
-when adding your lines to the "album_dl_.txt" file do not use spaces or special characters.
+This code uses the "[yt-dlp](https://github.com/yt-dlp/yt-dlp)" library.
+
+## Syntax for download file
+This program works by reading the text file "album_dl.txt" and creating directories to represent the fields in the text files such as genre, artist, album. The format is VERY syntax reliant so do not deviate from the form.
 ```
 "youtube URL";"Genre";"Artist";"Album"
 ```
-Now with error checking in safe mode!
+
+## Requirements
 Required Bash CLI tools:
-    -id3tool
+    -id3tag
 Installing Python requirements is as easy as:
 ``` pip3 install -r requirements.txt ```
