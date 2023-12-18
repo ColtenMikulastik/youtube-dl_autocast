@@ -3,8 +3,53 @@
 import csv
 import os
 import yt_dlp
-# import requests
+import requests
+import time
 # from bs4 import BeautifulSoup
+
+
+def album_cover_art_dl(var_working_path, var_artist, var_album, max_releases):
+    """ downloads an album cover for a specific album and artist """
+    params = {
+        "fmt": "json"
+    }
+    reply = requests.get("http://musicbrainz.org/ws/2/release/?query=release:\"" + var_album + "\" AND artist:\"" + var_artist + "\"", params=params)
+
+    print("downloading album cover art")
+    # make sure that we got a good request
+    if reply.status_code == 200:
+        reply_dict = reply.json()
+
+        # loop through releases until we go past 10, or we find a cover
+        releases = reply_dict["releases"]
+        for release in releases[:max_releases]:
+            if release["score"] == 100:
+                # sleep so we don't get blocked
+                time.sleep(1.1)
+
+                # use releases' id and change to dict
+                cover_reply = requests.get("http://coverartarchive.org/release/" + release["id"])
+                if cover_reply.status_code == 200:
+                    cover_reply = cover_reply.json()
+
+                    # get img url from cover reply
+                    img_url = cover_reply["images"][0]["image"]
+
+                    # make file name and write image to file
+                    file_name = os.path.join(var_working_path, "albumcover.jpg")
+                    time.sleep(1.1)
+                    img = requests.get(img_url)
+                    if img.status_code == 200:
+                        with open(file_name, "wb") as img_file:
+                            img_file.write(img.content)
+                            # leave loop
+                            break  # could remove line to keep bunch of art
+                    else:
+                        print("Failure Occured when requesting Image")
+                else:
+                    print("Cover Art Archive api request failure")
+    else:
+        print("Musicbrainz api request failure")
 
 
 def mp3set(genre, artist, album):
@@ -130,6 +175,8 @@ def main():
             varPath = os.path.join(varGenre, varArtist, varAlbum)
             # implementation of yt_dlp, faster at downloading
             yt_dlp_download(varURL, varPath)
+            # download album art
+            album_cover_art_dl(varPath, varArtist, varAlbum, max_releases=10)
             # download_album_cover(varURL, varPath, varAlbum)
             mp3set(varGenre, varArtist, varAlbum)
 
