@@ -79,7 +79,7 @@ def mp3set(genre, artist, album):
 
     # loop through each song, and !!!!album art!!!!
     for song_file in songs:
-        if song_file != "album.jpg":
+        if song_file != "albumcover.jpg":
             # fix formatting of song and data
             # remove the number
             song = song_file.split(" ")
