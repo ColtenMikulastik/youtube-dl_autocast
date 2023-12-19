@@ -79,19 +79,20 @@ def mp3set(genre, artist, album):
 
     # loop through each song, and !!!!album art!!!!
     for song_file in songs:
-        # fix formatting of song and data
-        # remove the number
-        song = song_file.split(" ")
-        song_num = song[0]
+        if song_file != "album.jpg":
+            # fix formatting of song and data
+            # remove the number
+            song = song_file.split(" ")
+            song_num = song[0]
 
-        # parse song name from file name
-        song[-1] = song[-1].split(".")[0]
-        song_name = " ".join(song[1:])
+            # parse song name from file name
+            song[-1] = song[-1].split(".")[0]
+            song_name = " ".join(song[1:])
 
-        # craft our bash command
-        cmd = "id3tag -s \"" + song_name + "\" -t " + str(song_num) + " -a \"" + artist + "\" -A \"" + album + "\" -g " + str(id3_genre) + " \"" + os.path.join(active_path, song_file) + "\""
-        # send command
-        os.system(cmd)
+            # craft our bash command
+            cmd = "id3tag -s \"" + song_name + "\" -t " + str(song_num) + " -a \"" + artist + "\" -A \"" + album + "\" -g " + str(id3_genre) + " \"" + os.path.join(active_path, song_file) + "\""
+            # send command
+            os.system(cmd)
 
 
 def yt_dlp_download(youtube_url, varPath):
