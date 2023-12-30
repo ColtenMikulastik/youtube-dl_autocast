@@ -141,7 +141,7 @@ def main():
             varPath = os.path.join(varGenre, varArtist, varAlbum)
             # implementation of yt_dlp, faster at downloading
             yt_dlp_download(varURL, varPath)
-            # download album art
+            # download album art with use of api's from Musicbrains
             album_cover_art_dl(varPath, varArtist, varAlbum, max_releases=10)
             # download_album_cover(varURL, varPath, varAlbum)
             mp3set(varGenre, varArtist, varAlbum)
