@@ -20,10 +20,11 @@ class Album:
     def __init__(self, line: str):
         """ creates an album class """
         fields = line.split(';')
-        nline = fields[3]
-        nline = list(nline)
-        nline.pop()
-        fields[3] = ''.join(nline)
+        # removes new line character... (not always useful)
+        # nline = fields[3]
+        # nline = list(nline)
+        # nline.pop()
+        # fields[3] = ''.join(nline)
         self.URL = fields[0]
         self.Genre = fields[1]
         self.Artist = fields[2]
@@ -129,13 +130,19 @@ def mp3_metadata_set(a: Album):
         # save tags
         id3.save()
         print("metadata fixed for: " + song)
+        # TODO figure this out 
         # finish with the album art
-        if album_exists:
-            audio = MP3(song)
-            with open(a.Album_cover_path) as albumart:
-                audio.tags.add(APIC(data=albumart.read()))
-            audio.save()
-            print("and album art...")
+        # if album_exists:
+        #     audio = MP3(song)
+        #     with open(a.Album_cover_path, encoding="ASCII") as albumart:
+        #         audio.tags.add(APIC(
+        #             mime='image/jpeg',
+        #             type=3,
+        #             desc='Cover',
+        #             data=albumart.read()
+        #             ))
+        #     audio.save()
+        #     print("and album art...")
 
 
 def yt_dlp_download(youtube_url, varPath):
