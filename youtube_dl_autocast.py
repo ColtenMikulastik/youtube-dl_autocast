@@ -7,9 +7,35 @@ import requests
 import time
 # from bs4 import BeautifulSoup
 
+class Album:
+    def __init__(self, line: str):
+        """ creates an album class """
+        fields = line.split(';')
+        nline = fields[3]
+        nline = list(nline)
+        nline.pop()
+        fields[3] = ''.join(nline)
+        self.URL = fields[0]
+        self.Genre = fields[1]
+        self.Artist = fields[2]
+        self.Name = fields[3]
+        self.Path = os.path.join(self.Genre, self.Artist, self.Name)
 
-def album_cover_art_dl(var_working_path, var_artist, var_album, max_releases):
+    def download_album(self):
+        """ calls download function on album """
+        yt_dlp_download(self.URL, self.Path)
+
+    def set_mp3_metadata(self):
+        mp3set(self.Genre, self.Artist, self.Name)
+
+
+def album_cover_art_dl(a: Album, max_releases):
     """ downloads an album cover for a specific album and artist """
+    # re map our vairables to the class memeber variables
+    var_working_path = a.Path
+    var_artist = a.Artist
+    var_album = a.Name
+
     params = {
         "fmt": "json"
     }
@@ -19,6 +45,9 @@ def album_cover_art_dl(var_working_path, var_artist, var_album, max_releases):
     # make sure that we got a good request
     if reply.status_code == 200:
         reply_dict = reply.json()
+        if reply_dict["count"] == 0:
+            print("no matching albums found by MusicBrainz")
+            return
 
         # loop through releases until we go past 10, or we find a cover
         releases = reply_dict["releases"]
@@ -36,11 +65,11 @@ def album_cover_art_dl(var_working_path, var_artist, var_album, max_releases):
                     img_url = cover_reply["images"][0]["image"]
 
                     # make file name and write image to file
-                    file_name = os.path.join(var_working_path, "albumcover.jpg")
+                    a.Album_cover_path = os.path.join(var_working_path, "albumcover.jpg")
                     time.sleep(1.1)
                     img = requests.get(img_url)
                     if img.status_code == 200:
-                        with open(file_name, "wb") as img_file:
+                        with open(a.Album_cover_path, "wb") as img_file:
                             img_file.write(img.content)
                             # leave loop
                             break  # could remove line to keep bunch of art
@@ -103,6 +132,7 @@ def yt_dlp_download(youtube_url, varPath):
             "format": "bestaudio",
             "ignoreerrors": True,
             "retries": 10,
+            "extractor-args":"youtube:player_client=tv",
             "postprocessors": [
                     {
                         "key": "FFmpegExtractAudio",
@@ -125,26 +155,10 @@ def main():
     # the file's syntax is: "URL;Genre;Artist;Album"
     with open('album-dl.txt', 'r') as f_in:
         for line in f_in:
-
-            readline = line
-            variables = readline.split(';')
-
-            # remove the new line
-            nline = variables[3]
-            nline = list(nline)
-            nline.pop()
-            variables[3] = ''.join(nline)
-            varURL = variables[0]
-            varGenre = variables[1]
-            varArtist = variables[2]
-            varAlbum = variables[3]
-            varPath = os.path.join(varGenre, varArtist, varAlbum)
-            # implementation of yt_dlp, faster at downloading
-            yt_dlp_download(varURL, varPath)
-            # download album art with use of api's from Musicbrains
-            album_cover_art_dl(varPath, varArtist, varAlbum, max_releases=10)
-            # download_album_cover(varURL, varPath, varAlbum)
-            mp3set(varGenre, varArtist, varAlbum)
+            a = Album(line)
+            a.download_album()
+            album_cover_art_dl(a, max_releases=10)
+            # a.set_mp3_metadata()
 
 
 if __name__ == "__main__":
