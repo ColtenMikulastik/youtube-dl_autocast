@@ -5,6 +5,12 @@ import os
 import yt_dlp
 import requests
 import time
+import glob
+from mutagen.easyid3 import EasyID3
+from mutagen.id3 import APIC
+from mutagen.mp3 import MP3
+import mutagen.id3
+
 # from bs4 import BeautifulSoup
 
 class Album:
@@ -35,11 +41,17 @@ def album_cover_art_dl(a: Album, max_releases):
     var_working_path = a.Path
     var_artist = a.Artist
     var_album = a.Name
+    # also set this...
+    a.Album_cover_path = ""
 
     params = {
         "fmt": "json"
     }
-    reply = requests.get("http://musicbrainz.org/ws/2/release/?query=release:\"" + var_album + "\" AND artist:\"" + var_artist + "\"", params=params)
+    try:
+        reply = requests.get("http://musicbrainz.org/ws/2/release/?query=release:\"" + var_album + "\" AND artist:\"" + var_artist + "\"", params=params)
+    except:
+        print("issue with musicbrainz api")
+        return
 
     print("downloading album cover art")
     # make sure that we got a good request
@@ -79,6 +91,49 @@ def album_cover_art_dl(a: Album, max_releases):
                     print("Cover Art Archive api request failure")
     else:
         print("Musicbrainz api request failure")
+
+
+def new_mp3_metadata_set(a: Album):
+    """ sets the mp3 tags using id3tag in python """
+
+    # grab all the files
+    songs = glob.glob(a.Path + "/*.mp3")
+
+    # figure out max track
+    # take max value
+    max_track = max(songs)
+    # grabs the first letter of the fourth part of the path
+    max_track = max_track.split('/')[3][0]
+
+    album_exists = False
+    # set a flag for if there is an album cover downloaded
+    if a.Album_cover_path != "":
+        album_exists = True
+
+    for song in songs:
+        try:
+            id3 = EasyID3(song)
+        except mutagen.id3.ID3NoHeaderError:
+            id3 = mutagen.File(song, easy=True)
+            id3.add_tags()
+
+        title = song.split('/')[3]
+        id3['title'] = title
+        id3['artist'] = a.Artist
+        id3['album'] = a.Name
+        id3['genre'] = a.Genre
+        track_num = song.split('/')[3][0]
+        id3['tracknumber'] = track_num + '/' + max_track
+
+        id3.save()
+        print("metadata fixed for: " + song)
+        # finish with the album art
+        if album_exists:
+            audio = MP3(song)
+            with open(a.Album_cover_path) as albumart:
+                audio.tags.add(APIC(data=albumart.read()))
+            audio.save()
+            print("and album art...")
 
 
 def mp3set(genre, artist, album):
@@ -158,7 +213,15 @@ def main():
             a = Album(line)
             a.download_album()
             album_cover_art_dl(a, max_releases=10)
+            new_mp3_metadata_set(a)
             # a.set_mp3_metadata()
+
+def init_for_testint():
+    """ test function for loading an album without calling download """
+    with open('album-dl.txt', 'r') as f_in:
+        for line in f_in:
+            a = Album(line)
+            return a
 
 
 if __name__ == "__main__":
