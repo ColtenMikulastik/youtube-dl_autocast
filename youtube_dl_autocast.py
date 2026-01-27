@@ -13,7 +13,18 @@ import mutagen.id3
 import threading
 from queue import Queue
 
+from flask import Flask, request, jsonify
+
+# global stuff 
+app = Flask(__name__)
 album_queue = Queue()
+
+@app.route("/", methods=["POST"])
+def main():
+    data = request.json
+    album = data["url"]
+    album_queue.put(album)
+    return jsonify({"status": "queued", "album": album})
 
 
 class Album:
@@ -168,7 +179,7 @@ def yt_dlp_download(youtube_url, varPath):
         ydl.download(youtube_url)
 
 
-def main():
+def not_main():
     # tell the user what is happening
     print("You are running youtube-dl_autocast...")
     while 1:
@@ -204,4 +215,4 @@ worker_thread = threading.Thread(
 worker_thread.start()
 
 if __name__ == "__main__":
-    main()
+    app.run()
