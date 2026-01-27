@@ -1,6 +1,5 @@
 # Luca (Colten) Mikulastik: 3/13/2022
 
-import csv
 import os
 import yt_dlp
 import requests
@@ -11,7 +10,6 @@ from mutagen.id3 import APIC
 from mutagen.mp3 import MP3
 import mutagen.id3
 
-# from bs4 import BeautifulSoup
 
 class Album:
     def __init__(self, line: str):
@@ -107,6 +105,7 @@ def mp3_metadata_set(a: Album):
     if a.Album_cover_path != "":
         album_exists = True
 
+    # loop through songs in the album and set metadata
     for song in songs:
         try:
             id3 = EasyID3(song)
@@ -121,7 +120,8 @@ def mp3_metadata_set(a: Album):
         id3['genre'] = a.Genre
         track_num = song.split('/')[3][0]
         id3['tracknumber'] = track_num + '/' + max_track
-
+        
+        # save tags
         id3.save()
         print("metadata fixed for: " + song)
         # finish with the album art
