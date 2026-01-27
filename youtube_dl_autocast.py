@@ -10,6 +10,11 @@ from mutagen.id3 import APIC
 from mutagen.mp3 import MP3
 import mutagen.id3
 
+import threading
+from queue import Queue
+
+album_queue = Queue()
+
 
 class Album:
     def __init__(self, line: str):
@@ -159,16 +164,10 @@ def yt_dlp_download(youtube_url, varPath):
 def main():
     # tell the user what is happening
     print("You are running youtube-dl_autocast...")
+    while 1:
+        add_record = input("please input a hyper specificly formatted string: ")
+        album_queue.put(add_record)
 
-    # so now I have to add the text parsing part of the program
-    # the file's syntax is: "URL;Genre;Artist;Album"
-    with open('album-dl.txt', 'r') as f_in:
-        for line in f_in:
-            a = Album(line)
-            a.download_album()
-            album_cover_art_dl(a, max_releases=10)
-            mp3_metadata_set(a)
-            # a.set_mp3_metadata()
 
 def init_for_testing():
     """ test function for loading an album without calling download """
@@ -177,6 +176,25 @@ def init_for_testing():
             a = Album(line)
             return a
 
+
+def album_dl_worker():
+    while True:
+        # thread blocking function
+        record = album_queue.get()
+        print("work has been input: " + record)
+
+        a = Album(record)
+        a.download_album()
+        album_cover_art_dl(a, max_releases=10)
+        mp3_metadata_set(a)
+        # a.set_mp3_metadata()
+        print("success")
+
+worker_thread = threading.Thread(
+    target=album_dl_worker,
+    daemon=True
+)
+worker_thread.start()
 
 if __name__ == "__main__":
     main()
