@@ -31,9 +31,6 @@ class Album:
         """ calls download function on album """
         yt_dlp_download(self.URL, self.Path)
 
-    def set_mp3_metadata(self):
-        mp3set(self.Genre, self.Artist, self.Name)
-
 
 def album_cover_art_dl(a: Album, max_releases):
     """ downloads an album cover for a specific album and artist """
@@ -93,7 +90,7 @@ def album_cover_art_dl(a: Album, max_releases):
         print("Musicbrainz api request failure")
 
 
-def new_mp3_metadata_set(a: Album):
+def mp3_metadata_set(a: Album):
     """ sets the mp3 tags using id3tag in python """
 
     # grab all the files
@@ -136,49 +133,6 @@ def new_mp3_metadata_set(a: Album):
             print("and album art...")
 
 
-def mp3set(genre, artist, album):
-    """ sets the mp3 tags with id3tag """
-    # dictionary that holds mappings of genre str to id3 int value
-    id3_genre_conv = {}
-
-    # unload the csv with the mappings of the id3 genre tags, omtting weird key
-    with open("id3_conv.csv", newline='') as conv_file:
-        reader = csv.reader(conv_file)
-        for feild in reader:
-            id3_genre_conv[feild[1]] = int(feild[0])
-
-    # get path, and all songs
-    active_path = os.path.join(os.curdir, genre, artist, album)
-    songs = os.listdir(active_path)
-
-    # attempt to convert genre, if not found default to None=255
-    try:
-        id3_genre = id3_genre_conv[genre]
-        pass
-    except KeyError:
-        print("Genre not recognized, default None")
-        id3_genre = id3_genre_conv["None"]
-
-        os.path
-
-    # loop through each song, and !!!!album art!!!!
-    for song_file in songs:
-        if song_file != "albumcover.jpg":
-            # fix formatting of song and data
-            # remove the number
-            song = song_file.split(" ")
-            song_num = song[0]
-
-            # parse song name from file name
-            song[-1] = song[-1].split(".")[0]
-            song_name = " ".join(song[1:])
-
-            # craft our bash command
-            cmd = "id3tag -s \"" + song_name + "\" -t " + str(song_num) + " -a \"" + artist + "\" -A \"" + album + "\" -g " + str(id3_genre) + " \"" + os.path.join(active_path, song_file) + "\""
-            # send command
-            os.system(cmd)
-
-
 def yt_dlp_download(youtube_url, varPath):
     """ calls and downloads youtube videos with yt-dlp """
     # options need to be specified based on audio quality
@@ -213,10 +167,10 @@ def main():
             a = Album(line)
             a.download_album()
             album_cover_art_dl(a, max_releases=10)
-            new_mp3_metadata_set(a)
+            mp3_metadata_set(a)
             # a.set_mp3_metadata()
 
-def init_for_testint():
+def init_for_testing():
     """ test function for loading an album without calling download """
     with open('album-dl.txt', 'r') as f_in:
         for line in f_in:
