@@ -13,22 +13,63 @@ import mutagen.id3
 import threading
 from queue import Queue
 
+from flask import Flask, request, jsonify, render_template
+
+# global stuff 
+app = Flask(__name__)
 album_queue = Queue()
+
+@app.route("/")
+def main():
+    """prints home page for the webapp"""
+    # get the info for whats on the queue
+    print_me = list(album_queue.queue)
+    
+    ## Display the HTML form template 
+    return render_template('index.html', queue_status=print_me)
+
+@app.route("/add_to_queue")
+def add_to_queue():
+    """ displays form which continues to read-form endpoint """
+    return render_template('test.html')
+
+# `read-form` endpoint 
+@app.route('/read-form', methods=['POST'])
+def read_form():
+
+    # Get the form data as Python ImmutableDict datatype 
+    data = request.form
+    url = data['inputURL']
+    genre = data['inputGenre']
+    artist = data['inputArtist']
+    album = data['inputAlbum']
+    print( url + genre + artist + album)
+
+    # generate fields list and send off to worker
+    fields = [url, genre, artist, album]
+    album_queue.put(fields)
+
+    # after added to queue, continue back to home
+    return render_template("index.html")
+
+def parse_album_info(line:str):
+    """ returns a list holding, [link, genre, artist, album] """ 
+    fields = line.split(';')
+    # removes new line character... (not always useful)
+    # nline = fields[3]
+    # nline = list(nline)
+    # nline.pop()
+    # fields[3] = ''.join(nline)
+    return fields
 
 
 class Album:
-    def __init__(self, line: str):
-        """ creates an album class """
-        fields = line.split(';')
-        # removes new line character... (not always useful)
-        # nline = fields[3]
-        # nline = list(nline)
-        # nline.pop()
-        # fields[3] = ''.join(nline)
+    def __init__(self, fields: str):
         self.URL = fields[0]
         self.Genre = fields[1]
         self.Artist = fields[2]
         self.Name = fields[3]
+        """ creates an album class """
         self.Path = os.path.join(self.Genre, self.Artist, self.Name)
 
     def download_album(self):
@@ -168,7 +209,7 @@ def yt_dlp_download(youtube_url, varPath):
         ydl.download(youtube_url)
 
 
-def main():
+def not_main():
     # tell the user what is happening
     print("You are running youtube-dl_autocast...")
     while 1:
@@ -188,7 +229,7 @@ def album_dl_worker():
     while True:
         # thread blocking function
         record = album_queue.get()
-        print("work has been input: " + record)
+        print("work has been input: " + str(record))
 
         a = Album(record)
         a.download_album()
@@ -204,4 +245,4 @@ worker_thread = threading.Thread(
 worker_thread.start()
 
 if __name__ == "__main__":
-    main()
+    app.run()
