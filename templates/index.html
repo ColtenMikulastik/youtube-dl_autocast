@@ -13,6 +13,11 @@
 
 <body>
     <h1>Home page download queue: </h1>
+    {% for record in queue_status %}
+        <p> {{ record }} </p>
+    {% endfor %}
+    
+
 
 
     <footer>

@@ -21,8 +21,12 @@ album_queue = Queue()
 
 @app.route("/")
 def main():
+    """prints home page for the webapp"""
+    # get the info for whats on the queue
+    print_me = list(album_queue.queue)
+    
     ## Display the HTML form template 
-    return render_template('index.html')
+    return render_template('index.html', queue_status=print_me)
 
 @app.route("/add_to_queue")
 def add_to_queue():
