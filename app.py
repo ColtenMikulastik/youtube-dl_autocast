@@ -5,6 +5,7 @@ import yt_dlp
 import requests
 import time
 import glob
+import re
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import APIC
 from mutagen.mp3 import MP3
@@ -65,12 +66,12 @@ def parse_album_info(line:str):
 
 class Album:
     def __init__(self, fields: str):
+        """ creates an album class """
         self.URL = fields[0]
         self.Genre = fields[1]
         self.Artist = fields[2]
         self.Name = fields[3]
-        """ creates an album class """
-        self.Path = os.path.join(self.Genre, self.Artist, self.Name)
+        self.Path = os.path.join("Music", self.Genre, self.Artist, self.Name)
 
     def download_album(self):
         """ calls download function on album """
@@ -140,12 +141,17 @@ def mp3_metadata_set(a: Album):
 
     # grab all the files
     songs = glob.glob(a.Path + "/*.mp3")
-
-    # figure out max track
     # take max value
-    max_track = max(songs)
+    # max_track = max(songs)
+    # print(max_track)
+    # breaking for some reason
     # grabs the first letter of the fourth part of the path
-    max_track = max_track.split('/')[3][0]
+    # nah, split path by '/' index last element, split again by space, grab first element
+    # "([non-inf char string]/){recurring non-inf times}/XX [non-inf char string].mp3" => XX
+
+    # max_track = max_track.split('/')[-1].split(' ')[0]
+    # print("=====================================")
+    # print(max_track)
 
     album_exists = False
     # set a flag for if there is an album cover downloaded
@@ -161,12 +167,15 @@ def mp3_metadata_set(a: Album):
             id3.add_tags()
 
         title = song.split('/')[3]
-        id3['title'] = title
-        id3['artist'] = a.Artist
-        id3['album'] = a.Name
-        id3['genre'] = a.Genre
-        track_num = song.split('/')[3][0]
-        id3['tracknumber'] = track_num + '/' + max_track
+        id3['title'] = str(title)
+        id3['artist'] = str(a.Artist)
+        id3['album'] = str(a.Name)
+        id3['genre'] = str(a.Genre)
+        filename = song.split('/')[-1]
+        match = re.match(r'^(\d+)', filename)
+        if match:
+            track_num = str(int(match.group(1)))
+            id3['tracknumber'] = track_num
         
         # save tags
         id3.save()
