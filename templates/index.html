@@ -1,28 +1,228 @@
-
 <!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> yt-dlp autocast</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind theme/ config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#0d0f0e',
+                        surface: '#141714',
+                        'border-lo': '#242924',
+                        'border-hi': '#2f362f',
+                        text: '#c8d4c8',
+                        muted: '#566056',
+                        accent: '#4aff7a',
+                        'accent-dim': '#1a3324',
+                        danger: '#ff4a4a',
+                    },
+                    fontFamily: {
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                        sans: ['"IBM Plex Sans"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts — same as before -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+
+    <!--
+    The ONLY things that can't be done with Tailwind utility classes alone:
+    1. The ::before pseudo-element scanline overlay
+    2. The pulse keyframe animation
+    Everything else below is pure Tailwind.
+  -->
+    <style>
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(to bottom,
+                    transparent 0px, transparent 3px,
+                    rgba(0, 0, 0, 0.08) 3px, rgba(0, 0, 0, 0.08) 4px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .status-downloading {
+            animation: pulse-dot 1.5s infinite;
+        }
+    </style>
 </head>
 
+<body class="bg-bg font-sans text-text min-h-screen flex-grow items-start justify-center pt-10 px-5">
 
-<body>
-    <h1>Home page download queue: </h1>
-    {% for record in queue_status %}
-        <p> {{ record }} </p>
-    {% endfor %}
-    
+    <!-- ── MAIN CONTENT ────────────────────────────────────────── -->
+    <div class="p-7">
 
-
-
-    <footer>
-        <p>
-            <a href="/add_to_queue">Add a link to the queue</a>
+        <!-- Section label — reused pattern: mono, tiny, uppercase, accent-colored, wide tracking -->
+        <p class="font-mono text-[11px] font-semibold tracking-[0.18em] uppercase text-accent mb-3">
+            Add to Queue
         </p>
-    </footer>
+
+        <!--
+        FORM — action/method/field names are all identical to the original.
+        grid grid-cols-2 gap-2.5 → two-column grid with 10px gap
+        -->
+        <form class="grid grid-cols-2 gap-2.5 mb-8" action="{{ url_for('read_form') }}" method="post">
+
+            <!-- URL field: col-span-2 makes it stretch the full width -->
+            <div class="col-span-2 flex flex-col gap-1">
+                <label for="inputURL"
+                    class="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-muted">
+                    YouTube URL
+                </label>
+                <!-- relative/absolute trick for the search icon — same as before -->
+                <div class="relative">
+                    <input id="inputURL" name="inputURL" type="text"
+                        placeholder="https://youtube.com/playlist?list=…" autocomplete="off" spellcheck="false"
+                        class="w-full bg-bg border border-border-hi rounded font-mono text-[13px] text-text
+                 pl-8 pr-3 py-2.5 outline-none placeholder-muted
+                 focus:border-accent focus:ring-2 focus:ring-accent/10 transition-colors" />
+                </div>
+            </div>
+
+            <!-- Artist -->
+            <div class="flex flex-col gap-1">
+                <label for="inputArtist"
+                    class="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-muted">
+                    Artist
+                </label>
+                <input id="inputArtist" name="inputArtist" type="text" placeholder="e.g. Pink Floyd" class="bg-bg border border-border-hi rounded font-mono text-[13px] text-text
+               px-3 py-2.5 outline-none placeholder-muted
+               focus:border-accent focus:ring-2 focus:ring-accent/10 transition-colors" />
+            </div>
+
+            <!-- Album -->
+            <div class="flex flex-col gap-1">
+                <label for="inputAlbum"
+                    class="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-muted">
+                    Album
+                </label>
+                <input id="inputAlbum" name="inputAlbum" type="text" placeholder="e.g. The Wall" class="bg-bg border border-border-hi rounded font-mono text-[13px] text-text
+               px-3 py-2.5 outline-none placeholder-muted
+               focus:border-accent focus:ring-2 focus:ring-accent/10 transition-colors" />
+            </div>
+
+            <!-- Genre -->
+            <div class="flex flex-col gap-1">
+                <label for="inputGenre"
+                    class="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-muted">
+                    Genre
+                </label>
+                <input id="inputGenre" name="inputGenre" type="text" placeholder="e.g. Rock" class="bg-bg border border-border-hi rounded font-mono text-[13px] text-text
+               px-3 py-2.5 outline-none placeholder-muted
+               focus:border-accent focus:ring-2 focus:ring-accent/10 transition-colors" />
+            </div>
+
+            <!-- Submit button — col-span-2 + flex justify-end pushes it right -->
+            <div class="col-span-2 flex flex-col">
+                <button type="submit" class="bg-accent-dim border border-accent text-accent font-mono text-xs font-semibold
+                     tracking-[0.1em] uppercase px-7 py-2.5 rounded cursor-pointer
+                     hover:bg-accent/20 hover:shadow-[0_0_12px_rgba(74,255,122,0.15)]
+                     active:scale-[0.98] transition-all">
+                    + Add to Queue
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Divider -->
+        <hr class="border-t border-border-lo mb-6" />
+
+        <!-- Queue header row -->
+        <div class="flex items-center justify-between mb-2.5">
+            <p class="font-mono text-[11px] font-semibold tracking-[0.18em] uppercase text-accent">Queue</p>
+            <span class="font-mono text-[11px] text-muted">
+                {{ queue_status | length }} item{{ 's' if queue_status | length != 1 else '' }}
+            </span>
+        </div>
+
+        <!-- Table -->
+        <table class="w-full border-collapse text-[13px]">
+            <thead>
+                <tr class="border-b border-border-hi">
+                    <th
+                        class="font-mono text-[10px] font-semibold tracking-[0.14em] uppercase text-muted text-left px-3 py-2 w-24">
+                        Status</th>
+                    <th
+                        class="font-mono text-[10px] font-semibold tracking-[0.14em] uppercase text-muted text-left px-3 py-2">
+                        Artist</th>
+                    <th
+                        class="font-mono text-[10px] font-semibold tracking-[0.14em] uppercase text-muted text-left px-3 py-2">
+                        Album</th>
+                    <th
+                        class="font-mono text-[10px] font-semibold tracking-[0.14em] uppercase text-muted text-left px-3 py-2">
+                        Genre</th>
+                    <th
+                        class="font-mono text-[10px] font-semibold tracking-[0.14em] uppercase text-muted text-left px-3 py-2">
+                        URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if queue_status %}
+                {% for record in queue_status %}
+                <tr class="border-b border-border-lo last:border-b-0 hover:bg-white/[0.02] transition-colors">
+                    <td class="px-3 py-3">
+                        <!--
+              Status badge — inline-flex with a dot pseudo-element isn't possible
+              in Tailwind, so we use a real <span> for the dot instead.
+            -->
+                        <span class="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold
+                         tracking-[0.08em] uppercase px-2 py-1 rounded
+                         bg-muted/10 text-muted border border-border-hi">
+                            <span class="w-1.5 h-1.5 rounded-full bg-muted flex-shrink-0"></span>
+                            Queued
+                        </span>
+                    </td>
+                    <td class="px-3 py-3 text-text">{{ record[2] }}</td>
+                    <td class="px-3 py-3 text-text">{{ record[3] }}</td>
+                    <td class="px-3 py-3 font-mono text-[11px] text-muted">{{ record[1] }}</td>
+                    <td class="px-3 py-3 font-mono text-[11px] text-muted max-w-[180px] truncate"
+                        title="{{ record[0] }}">
+                        {{ record[0] }}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-3 py-14 text-center font-mono text-xs text-muted tracking-wider">
+                        <div class="text-3xl mb-3 opacity-30">▷</div>
+                        queue is empty — add a URL above to get started
+    </div>
+    </td>
+    </tr>
+    {% endif %}
+    </tbody>
+    </table>
+
+    </div><!-- /window -->
+
 </body>
+
+</html>

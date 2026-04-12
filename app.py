@@ -14,7 +14,7 @@ import mutagen.id3
 import threading
 from queue import Queue
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 
 # global stuff 
 app = Flask(__name__)
@@ -28,11 +28,6 @@ def main():
     
     ## Display the HTML form template 
     return render_template('index.html', queue_status=print_me)
-
-@app.route("/add_to_queue")
-def add_to_queue():
-    """ displays form which continues to read-form endpoint """
-    return render_template('test.html')
 
 # `read-form` endpoint 
 @app.route('/read-form', methods=['POST'])
@@ -51,7 +46,7 @@ def read_form():
     album_queue.put(fields)
 
     # after added to queue, continue back to home
-    return render_template("index.html")
+    return redirect(url_for('main'))
 
 def parse_album_info(line:str):
     """ returns a list holding, [link, genre, artist, album] """ 
